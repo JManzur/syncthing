@@ -1,0 +1,60 @@
+---
+- hosts: "localhost"
+  gather_facts: no
+  tasks:
+  - include_vars: "{{ playbook_dir }}/../vars.yml"
+  - name: Add host from variable file
+    add_host:
+      groups: linux
+      hostname: "{{ server_ip }}"
+      ansible_user: "{{ ssh_user }}"
+      ansible_python_interpreter: "/usr/bin/python3"
+
+- hosts: linux
+  become: true
+  pre_tasks:
+  - name: Update and Upgrade
+    apt:
+      update_cache: yes
+      upgrade: 'yes'
+
+  tasks:
+  - include_vars: "{{ playbook_dir }}/../vars.yml"
+  - name: Install packages
+    package:
+      name:
+        - git
+        - htop
+        - vim
+        - curl
+        - net-tools
+        - telnet
+        - tree
+        - docker
+        - docker-compose
+
+  - name: Add user to the Docker group.
+    user:
+      name: "{{ ssh_user }}"
+      groups: docker
+      append: yes
+
+  - name: Create the syncthing directory
+    ansible.builtin.file:
+      path: /opt/syncthing
+      state: directory
+      mode: '0755'
+
+  - name: Copy Docker-Compose file
+    ansible.builtin.copy:
+      src: "{{ playbook_dir }}/../syncthing/docker-compose.yml"
+      dest: /opt/syncthing
+      owner: root
+      group: root
+      mode: '0644'
+      backup: yes
+
+  - name: Start syncthing
+    docker_compose:
+      project_src: /opt/syncthing
+      recreate: always
