@@ -1,5 +1,5 @@
 
-# WireGuard deployment with Ansible and Docker-Compose
+# Syncthing deployment with Ansible and Docker-Compose
 
 >Syncthing is a continuous file synchronization program. It synchronizes files between two or more computers in real time, safely protected from prying eyes. Your data is your data alone and you deserve to choose where it is stored, whether it is shared with some third party, and how it's transmitted over the internet.
 
@@ -49,6 +49,7 @@ brew install hudochenkov/sshpass/sshpass
     ```bash
     ./install.sh
     ```
+7. Once the installation is done, go to your server IP on port 8384 http://SERVER-IP:8384
 
 ## Debugging / Troubleshooting:
 
